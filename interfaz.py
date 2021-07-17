@@ -3,6 +3,8 @@ from dash.dependencies import Input, Output, State
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
+from calculadora import calculadora
+from dash.exceptions import PreventUpdate
 
 app = dash.Dash(__name__)
 
@@ -36,6 +38,7 @@ app.layout = html.Div([
 
     html.Button('Add Row', id='editing-rows-button', n_clicks=0),
     html.Button('Resolver', id='greshgorin', n_clicks=0),
+    html.Div(id='salida'),
 
     dcc.Graph(id='adding-rows-graph')
 
@@ -48,11 +51,21 @@ app.layout = html.Div([
     State('adding-rows-table', 'data'),
     State('adding-rows-table', 'columns'))
 def add_row(n_clicks, rows, columns):
-    print(rows)
+    #print(rows)
     if n_clicks > 0:
         rows.append({c['id']: '' for c in columns})
     return rows
 
+@app.callback(
+    Output('salida', 'children'),
+    Input('greshgorin', 'n_clicks'),
+    State('adding-rows-table', 'data') )
+def print_solution_2(n_clicks, data):
+
+    if n_clicks==0:
+        raise PreventUpdate
+    sol=calculadora(data)
+    return sol
 
 @app.callback(
     Output('adding-rows-table', 'columns'),
