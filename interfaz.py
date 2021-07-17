@@ -9,6 +9,10 @@ from dash.exceptions import PreventUpdate
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
+    html.H1("Greshgorin Theorem", id='title',style={
+                                      'textAlign': 'center',
+                                      "background": "green"
+                                     }),
     html.Div([
         dcc.Input(
             id='adding-rows-name',
@@ -40,7 +44,7 @@ app.layout = html.Div([
     html.Button('Resolver', id='greshgorin', n_clicks=0),
     html.Div(id='salida'),
 
-    dcc.Graph(id='adding-rows-graph')
+    #dcc.Graph(id='adding-rows-graph')
 
 ])
 
@@ -81,18 +85,6 @@ def update_columns(n_clicks, value, existing_columns):
     return existing_columns
 
 
-@app.callback(
-    Output('adding-rows-graph', 'figure'),
-    Input('adding-rows-table', 'data'),
-    Input('adding-rows-table', 'columns'))
-def display_output(rows, columns):
-    return {
-        'data': [{
-            'type': 'heatmap',
-            'z': [[row.get(c['id'], None) for c in columns] for row in rows],
-            'x': [c['name'] for c in columns]
-        }]
-    }
 
 
 if __name__ == '__main__':

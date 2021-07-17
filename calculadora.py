@@ -22,7 +22,9 @@ def obtener_matriz(data):
         for fila in data:
             lista=list(fila.values())
             matriz.append(lista)
-        final=np.array(matriz)
+        #se define en que conjunto de numeros se trabaja
+        final=np.array(matriz,dtype='f')
+
         print(final)
         return final
 def Greshgorin_calcule(matrix):
@@ -30,14 +32,14 @@ def Greshgorin_calcule(matrix):
     radios=[]
     centros=[]
     solutio='la solución es la siguiente: \t'
-    for i in range(n-1):
+    for i in range(n):
         i_=i+1
         ce=matrix[i][i]
         centro_coordenadas=[ce.real,ce.imag]
         radio=np.sum(abs(matrix[i]))-abs(ce)
         radios.append(radio)
         centros.append(centro_coordenadas)
-        solutio+=f"el centro del diso {i_} es {centro_coordenadas} y su radio es {radio}\t"
+        solutio+=f"el centro del diso {i_} es {centro_coordenadas} y su radio es {radio},\n\t"
          #'Route distance: {}metros\n'.format(route_distance)
     centros=np.array(centros)
     return [radios,centros],solutio
