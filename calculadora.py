@@ -31,7 +31,7 @@ def Greshgorin_calcule(matrix):
     n=matrix.shape[1]
     radios=[]
     centros=[]
-    solutio='la solución es la siguiente: \t'
+    solutio=['La solución es la siguiente: \n']
     for i in range(n):
         i_=i+1
         ce=matrix[i][i]
@@ -39,7 +39,7 @@ def Greshgorin_calcule(matrix):
         radio=np.sum(abs(matrix[i]))-abs(ce)
         radios.append(radio)
         centros.append(centro_coordenadas)
-        solutio+=f"el centro del diso {i_} es {centro_coordenadas} y su radio es {radio},\n\t"
+        solutio.append(f"el centro del diso {i_} es {centro_coordenadas} y su radio es {radio}\n")
          #'Route distance: {}metros\n'.format(route_distance)
     centros=np.array(centros)
     return [radios,centros],solutio
@@ -56,7 +56,7 @@ def grafica(lista):
 
     p.circle(centros[0], centros[1], radius=radios)
 
-    show(p)
+    #show(p)
 
     #guardar en .html y crear una funcion que mande un div y despliegue la grafica
 #mat=[{'column-1': 0, 'column-2': 5, 'column-3': 10, 'column-4': 15}, {'column-1': 1, 'column-2': 6,
