@@ -3,7 +3,7 @@ import numba
 from bokeh.models import ColumnDataSource, Plot, LinearAxis, Grid
 from bokeh.models.markers import Circle
 from bokeh.io import curdoc, show
-from bokeh.plotting import figure, output_file, show
+from bokeh.plotting import figure, output_file, show, save
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
@@ -36,25 +36,67 @@ def Greshgorin_calcule(matrix):
         i_=i+1
         ce=matrix[i][i]
         centro_coordenadas=[ce.real,ce.imag]
+        centro=(ce.real,ce.imag)
         radio=np.sum(abs(matrix[i]))-abs(ce)
         radios.append(radio)
         centros.append(centro_coordenadas)
-        solutio.append(f"el centro del diso {i_} es {centro_coordenadas} y su radio es {radio}\n")
+        solutio.append(f"el centro del diso {i_} es {centro} y su radio es {radio}\n")
          #'Route distance: {}metros\n'.format(route_distance)
     centros=np.array(centros)
     return [radios,centros],solutio
+def add_tooltip_and_colors():
+            #this funcion return tooltip of information(centro, radios, nombre de la fila del disco), a list of colors and list of tools for figure, that include
+            #select with tap and selection and non-selection
+        source = ColumnDataSource(data=dict(
+            x=[1, 2, 3, 4, 5],
+            y=[2, 5, 8, 2, 7],
+            desc=['A', 'b', 'C', 'd', 'E'],
+        ))
+
+        TOOLTIPS = [
+            ("index", "$index"),
+            ("(x,y)", "($x, $y)"),
+            ("desc", "@desc"),
+        ]
+
+        p = figure(plot_width=400, plot_height=400, tooltips=TOOLTIPS,
+                   title="Mouse over the dots")
+
+        p.circle('x', 'y', size=20, source=source)
+
+        show(p)
+        return
 
 def grafica(lista):
     centros=list(lista[1].T)
     radios=lista[0]
-    #print(centros,radios)
+    print(centros,radios)
     output_file("toolbar.html")
+    numpy_array_of_colors = np.array(
+        [
+        0xFFFF00FF,
+        0x00FF00FF,
+        0xFF000088,
+        ], np.uint32,)
+    list_of_colors = [
+        "hsl(60deg 100% 50% / 1.0)",
+        "rgba(0, 0, 255, 0.9)",
+        "LightSeaGreen",]
 
     # create a new plot with the toolbar below
     p = figure(plot_width=700, plot_height=600,
                title='Greshgorin Circles', toolbar_location="left", x_range=(0, 40), y_range=(0, 40))
 
-    p.circle(centros[0], centros[1], radius=radios)
+    p.circle(centros[0], centros[1], radius=radios, color=list_of_colors,
+                    selection_color="firebrick",
+
+                       # set visual properties for non-selected glyphs
+                       nonselection_fill_alpha=0.2,
+                       nonselection_fill_color="blue",
+                       nonselection_line_color="firebrick",
+                       nonselection_line_alpha=1.0)
+    file_html(p, CDN, "my plot")
+    save(p, "my_plot.html")
 
     #show(p)
 
@@ -83,7 +125,7 @@ def calculadora(matrix):
                                    dcc.Markdown(solutio)
                         ]),
 
-                html.Iframe(id='map',srcDoc=open('toolbar.html','r').read(),width='75%',height='550'),
+                html.Iframe(id='map',srcDoc=open('my_plot.html','r').read(),width='75%',height='550'),
 
 
             ])
