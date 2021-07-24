@@ -1,6 +1,6 @@
 import numpy as np
 import numba
-from bokeh.models import ColumnDataSource, Plot, LinearAxis, Grid
+from bokeh.models import ColumnDataSource, Plot, LinearAxis, Grid,ColorBar
 from bokeh.models.markers import Circle
 from bokeh.io import curdoc, show
 from bokeh.plotting import figure, output_file, show, save
@@ -11,6 +11,8 @@ import dash
 from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_html_components as html
 import dash_core_components as dcc
+from bokeh.palettes import Spectral6
+from bokeh.transform import linear_cmap
 #import plotly.express as px
 
 
@@ -47,6 +49,9 @@ def Greshgorin_calcule(matrix):
 def add_tooltip_and_colors():
             #this funcion return tooltip of information(centro, radios, nombre de la fila del disco), a list of colors and list of tools for figure, that include
             #select with tap and selection and non-selection
+        #mapper = linear_cmap(field_name='y', palette=Spectral6 ,low=min(y) ,high=max(y))
+
+        """source = ColumnDataSource(dict(x=x,y=y))
         source = ColumnDataSource(data=dict(
             x=[1, 2, 3, 4, 5],
             y=[2, 5, 8, 2, 7],
@@ -64,30 +69,37 @@ def add_tooltip_and_colors():
 
         p.circle('x', 'y', size=20, source=source)
 
-        show(p)
+        show(p)"""
         return
 
 def grafica(lista):
     centros=list(lista[1].T)
     radios=lista[0]
-    print(centros,radios)
-    output_file("toolbar.html")
-    numpy_array_of_colors = np.array(
-        [
-        0xFFFF00FF,
-        0x00FF00FF,
-        0xFF000088,
-        ], np.uint32,)
+    x=list(centros[0])
+    y=list(centros[1])
+    #print(x,y,radios)
+    mapper = linear_cmap(field_name='x', palette=Spectral6 ,low=min(x) ,high=max(x))
+    TOOLTIPS = [
+    ("index", "$index"),
+    ("(x,y)", "($x, $y)"),
+        ]
+
+    source = ColumnDataSource(dict(x=x,y=y,radios=radios))
+
+    #output_file("toolbar.html")
+
     list_of_colors = [
         "hsl(60deg 100% 50% / 1.0)",
         "rgba(0, 0, 255, 0.9)",
         "LightSeaGreen",]
 
     # create a new plot with the toolbar below
-    p = figure(plot_width=700, plot_height=600,
-               title='Greshgorin Circles', toolbar_location="left", x_range=(0, 40), y_range=(0, 40))
+    p = figure(plot_width=600, plot_height=600,
+               title='Greshgorin Circles', toolbar_location="left", x_range=(0, 40),
+                y_range=(0, 40),tools="tap"+",pan,wheel_zoom,box_zoom,reset,save",tooltips=TOOLTIPS)
 
-    p.circle(centros[0], centros[1], radius=radios, color=list_of_colors,
+    p.circle(x='x', y='y', line_color=mapper,color=mapper,radius='radios', fill_alpha=1, size=12, source=source,
+    #centros[0], centros[1], radius=radios, color=list_of_colors,
                     selection_color="firebrick",
 
                        # set visual properties for non-selected glyphs
@@ -95,7 +107,7 @@ def grafica(lista):
                        nonselection_fill_color="blue",
                        nonselection_line_color="firebrick",
                        nonselection_line_alpha=1.0)
-    file_html(p, CDN, "my plot")
+    #file_html(p, CDN, "my plot")
     save(p, "my_plot.html")
 
     #show(p)
