@@ -46,38 +46,13 @@ def Greshgorin_calcule(matrix):
          #'Route distance: {}metros\n'.format(route_distance)
     centros=np.array(centros)
     return [radios,centros],solutio
-def add_tooltip_and_colors():
-            #this funcion return tooltip of information(centro, radios, nombre de la fila del disco), a list of colors and list of tools for figure, that include
-            #select with tap and selection and non-selection
-        #mapper = linear_cmap(field_name='y', palette=Spectral6 ,low=min(y) ,high=max(y))
 
-        """source = ColumnDataSource(dict(x=x,y=y))
-        source = ColumnDataSource(data=dict(
-            x=[1, 2, 3, 4, 5],
-            y=[2, 5, 8, 2, 7],
-            desc=['A', 'b', 'C', 'd', 'E'],
-        ))
-
-        TOOLTIPS = [
-            ("index", "$index"),
-            ("(x,y)", "($x, $y)"),
-            ("desc", "@desc"),
-        ]
-
-        p = figure(plot_width=400, plot_height=400, tooltips=TOOLTIPS,
-                   title="Mouse over the dots")
-
-        p.circle('x', 'y', size=20, source=source)
-
-        show(p)"""
-        return
 
 def grafica(lista):
     centros=list(lista[1].T)
     radios=lista[0]
     x=list(centros[0])
     y=list(centros[1])
-    #print(x,y,radios)
     mapper = linear_cmap(field_name='x', palette=Spectral6 ,low=min(x) ,high=max(x))
     TOOLTIPS = [
     ("index", "$index"),
@@ -85,13 +60,6 @@ def grafica(lista):
         ]
 
     source = ColumnDataSource(dict(x=x,y=y,radios=radios))
-
-    #output_file("toolbar.html")
-
-    list_of_colors = [
-        "hsl(60deg 100% 50% / 1.0)",
-        "rgba(0, 0, 255, 0.9)",
-        "LightSeaGreen",]
 
     # create a new plot with the toolbar below
     p = figure(plot_width=600, plot_height=600,
@@ -108,28 +76,17 @@ def grafica(lista):
                        nonselection_line_color="firebrick",
                        nonselection_line_alpha=1.0)
     #file_html(p, CDN, "my plot")
+    #se crea un archivo .html el cual contiene la grafica
     save(p, "my_plot.html")
 
-    #show(p)
-
-    #guardar en .html y crear una funcion que mande un div y despliegue la grafica
-#mat=[{'column-1': 0, 'column-2': 5, 'column-3': 10, 'column-4': 15}, {'column-1': 1, 'column-2': 6,
- #'column-3': 11, 'column-4': 16}, {'column-1': 2, 'column-2': 7, 'column-3': 12, 'column-4': 17}, {'column-1': 3, 'column-2': 8, 'column-3': 13, 'column-4': 18}]
-#matriz=obtener_matriz(mat)
-#datos=Greshgorin_calcule(matriz)
-
-#grafica(datos)
 
 def calculadora(matrix):
     matriz=obtener_matriz(matrix)
     datos,solutio=Greshgorin_calcule(matriz)
     grafica(datos)
-
+#re regresa una dicisión en htmal, la cual es mostrada en la interfaz
     return  html.Div([
             html.H5("La solución de la Matriz es:"),
-
-
-
 
 
                 html.Hr(),  # horizontal line
