@@ -13,10 +13,11 @@ import dash_html_components as html
 import dash_core_components as dcc
 from bokeh.palettes import Spectral6
 from bokeh.transform import linear_cmap
-#import plotly.express as px
 
-
+#Esta función permite obtener la matriz de la tabla, para que pueda
+#ser operada con las libreria de Bokeh y numpy
 def obtener_matriz(data):
+
     matriz=[]
     if len(data)!=len(data[1]):
         print("Debe ser una matriz cuadrada")
@@ -24,11 +25,12 @@ def obtener_matriz(data):
         for fila in data:
             lista=list(fila.values())
             matriz.append(lista)
-        #se define en que conjunto de numeros se trabaja
+        #se define en que conjunto de numeros se trabaja, en este caso float o reales,
         final=np.array(matriz,dtype='f')
-
         print(final)
         return final
+#Esta es la función donde se calculan los centros y los radios, y se guarda una
+#lista donde se guarda la solución que se muestra en pantalla
 def Greshgorin_calcule(matrix):
     n=matrix.shape[1]
     radios=[]
@@ -43,16 +45,15 @@ def Greshgorin_calcule(matrix):
         radios.append(radio)
         centros.append(centro_coordenadas)
         solutio.append(f"el centro del diso {i_} es {centro} y su radio es {radio}\n")
-         #'Route distance: {}metros\n'.format(route_distance)
     centros=np.array(centros)
     return [radios,centros],solutio
-
-
+#La función que crea la grafica
 def grafica(lista):
     centros=list(lista[1].T)
     radios=lista[0]
     x=list(centros[0])
     y=list(centros[1])
+
     mapper = linear_cmap(field_name='x', palette=Spectral6 ,low=min(x) ,high=max(x))
     TOOLTIPS = [
     ("index", "$index"),
@@ -67,7 +68,6 @@ def grafica(lista):
                 y_range=(0, 40),tools="tap"+",pan,wheel_zoom,box_zoom,reset,save",tooltips=TOOLTIPS)
 
     p.circle(x='x', y='y', line_color=mapper,color=mapper,radius='radios', fill_alpha=1, size=12, source=source,
-    #centros[0], centros[1], radius=radios, color=list_of_colors,
                     selection_color="firebrick",
 
                        # set visual properties for non-selected glyphs
@@ -84,7 +84,7 @@ def calculadora(matrix):
     matriz=obtener_matriz(matrix)
     datos,solutio=Greshgorin_calcule(matriz)
     grafica(datos)
-#re regresa una dicisión en htmal, la cual es mostrada en la interfaz
+#regresa una división de html, la cual es mostrada en la interfaz
     return  html.Div([
             html.H5("La solución de la Matriz es:"),
 
